@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <title>HexaMood</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+  <link href="/styles/style.css" rel="stylesheet">
+<script defer src="js/main.bundle.js"></script><link href="styles/style.css" rel="stylesheet"></head>
+<body style="opacity: 0">
+  <header class="border-bottom">
+    <div class="container d-flex justify-content-between align-items-center py-3">
+      <div class="logo-container d-flex align-items-center gap-2">
+        <img alt="Logo HexaMood" class="logo" height="48" src="./images/hxmod.png" width="48">
+        <div class="logo-text">HexaMood</div>
+      </div>
+      <nav class="d-flex gap-3">
+        <a href="index.html" class="active">Beranda</a>
+        <a href="checkin.html">Daily Check-In</a>
+        <a href="#">Hasil Prediksi</a>
+        <a href="#">Rekomendasi</a>
+      </nav>
+      <div class="auth-buttons d-flex gap-2">
+        <button class="btn-masuk btn btn-primary" onclick="window.location.href='login.html'">Masuk</button>
+        <button class="btn-daftar btn btn-outline-primary" onclick="window.location.href='register.html'">Daftar</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero py-5">
+      <div class="container d-flex flex-wrap align-items-center gap-4">
+        <div class="hero-text col-md-6">
+          <h1>Pahami Tingkat Stres Anda dengan HexaMood</h1>
+          <p>HexaMood membantu anda mengidentifikasi dan mengelola stres melalui penilaian yang sederhana dan interaktif serta rekomendasi yang dipersonalisasi.</p>
+          <button class="btn-learnmore btn btn-primary">Learn More</button>
+        </div>
+        <div class="hero-illustration col-md-6">
+          <!-- Illustration placeholder -->
+        </div>
+      </div>
+    </section>
+
+    <section class="section-howitworks py-5">
+      <div class="container text-center">
+        <h2>CARA KERJA <span class="highlight">HexaMood</span></h2>
+        <div class="row howitworks-cards mt-4">
+          <div class="col-md-4 mb-4">
+            <article class="card p-4">
+              <div class="card-icon"><i class="far fa-file-alt"></i></div>
+              <h3 class="card-title">Jawab Pertanyaan</h3>
+              <p class="card-desc">Isi kuesioner sederhana kami tentang perasaan Anda saat ini.</p>
+            </article>
+          </div>
+          <div class="col-md-4 mb-4">
+            <article class="card p-4">
+              <div class="card-icon"><i class="fas fa-chart-bar"></i></div>
+              <h3 class="card-title">Dapatkan Analisis</h3>
+              <p class="card-desc">Algoritma kami menghitung tingkat stres Anda berdasarkan respons Anda.</p>
+            </article>
+          </div>
+          <div class="col-md-4 mb-4">
+            <article class="card p-4">
+              <div class="card-icon"><i class="far fa-heart"></i></div>
+              <h3 class="card-title">Rekomendasi</h3>
+              <p class="card-desc">Dapatkan rekomendasi yang dipersonalisasi untuk membantu mengelola dan mengurangi stres Anda.</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-stress py-5">
+      <div class="container d-flex flex-wrap gap-4">
+        <div class="stress-left col-md-6">
+          <h3>MEMAHAMI <span class="highlight">STRES</span></h3>
+          <p>Stres adalah reaksi tubuh terhadap perubahan apapun yang memerlukan penyesuaian atau respons. Meskipun sering dianggap negatif, stres dalam jumlah kecil sebenarnya bermanfaat karena membantu Anda tetap fokus dan waspada.</p>
+          <p>Namun, stres kronis dapat menyebabkan masalah kesehatan serius, termasuk kecemasan, depresi, gangguan pencernaan, sakit kepala, penyakit jantung, masalah tidur, dan lain sebagainya.</p>
+          <div class="stress-box p-4">
+            <strong>Tahukah Anda?</strong><br>
+            75-90% dari semua kunjungan ke dokter adalah untuk keluhan dan penyakit yang berhubungan dengan stres. Pemantauan stres secara teratur dapat membantu mencegah masalah ini.
+          </div>
+        </div>
+        <aside class="stress-right col-md-5 p-4">
+          <h4>Gejala Stres yang Umum</h4>
+          <div class="symptom-item d-flex gap-2 mb-3">
+            <img alt="Ikon otak" class="symptom-icon" height="28" src="./images/cognitive-icon.jpg" width="28">
+            <div class="symptom-text"><strong>Gejala Kognitif</strong><br>Mudah lupa, penilaian buruk, kesulitan fokus dan konsentrasi.</div>
+          </div>
+          <div class="symptom-item d-flex gap-2 mb-3">
+            <img alt="Ikon jantung" class="symptom-icon" height="28" src="./images/physical-icon.jpg" width="28">
+            <div class="symptom-text"><strong>Gejala Fisik</strong><br>Rasa sakit dan nyeri, detak jantung cepat, sering masuk angin.</div>
+          </div>
+          <div class="symptom-item d-flex gap-2 mb-3">
+            <img alt="Ikon wajah tersenyum" class="symptom-icon" height="28" src="./images/emotional-icon.jpg" width="28">
+            <div class="symptom-text"><strong>Gejala Emosional</strong><br>Suasana hati yang buruk, mudah tersinggung, merasa kewalahan.</div>
+          </div>
+          <div class="symptom-item d-flex gap-2 mb-3">
+            <img alt="Ikon wajah beruang" class="symptom-icon" height="28" src="./images/behavioral-icon.jpg" width="28">
+            <div class="symptom-text"><strong>Gejala Perilaku</strong><br>Gugup atau resah, menghindar dari tanggung jawab, penurunan nafsu makan.</div>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="py-4">
+    <div class="container text-center">
+      <div class="footer-top d-flex justify-content-center align-items-center gap-3 mb-3">
+        <img alt="Logo HexaMood" class="footerlogo" height="32" src="./images/hxmod.png" width="32">
+        <div class="footer-logo-text">HexaMood</div>
+      </div>
+      <div class="footer-subtext mb-3">Membantu anda memahami dan mengelola stres melalui analisis yang inovatif.</div>
+      <div class="footer-bottom border-top pt-3">2025 HexaMood. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>
