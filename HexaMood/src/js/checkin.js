@@ -1,32 +1,79 @@
-import '../styles/style.css'; // Import CSS
+import '../styles/checkin.css';
 import axios from 'axios';
 
-window.submitCheckIn = async function () {
-  const mood = document.querySelector('input[name="mood"]:checked')?.value;
-  const anxiety = document.querySelector('input[name="anxiety"]:checked')?.value;
-  const sleep = document.querySelector('input[name="sleep"]:checked')?.value;
+document.addEventListener('DOMContentLoaded', () => {
+  const currentUser = localStorage.getItem('currentUser') ? JSON.parse(localStorage.getItem('currentUser')) : null;
+  if (!currentUser) {
+    alert('Silakan login untuk mengakses Daily Check-In.');
+    window.location.href = 'login.html';
+  }
+});
 
-  if (!mood || !anxiety || !sleep) {
-    alert('Harap isi semua pertanyaan.');
+// Handle logout
+function handleLogout() {
+  localStorage.removeItem('currentUser');
+  localStorage.removeItem('token');
+  window.location.href = 'index.html';
+}
+
+// Submit check-in form
+async function submitCheckIn() {
+  const mood = document.querySelector('input[name="mood"]:checked')?.value;
+  const sleep = document.querySelector('input[name="sleep"]:checked')?.value;
+  const anxiety = document.querySelector('input[name="anxiety"]:checked')?.value;
+  const exercise = document.querySelector('input[name="exercise"]:checked')?.value;
+  const support = document.querySelector('input[name="support"]:checked')?.value;
+
+  const errorMessage = document.getElementById('errorMessage');
+      
+  // Validate all fields are filled
+  if (!mood || !sleep || !anxiety || !exercise || !support) {
+    errorMessage.style.display = 'block';
+    errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
 
-  const data = { mood: parseInt(mood), anxiety: parseInt(anxiety), sleep: parseInt(sleep) };
+  errorMessage.style.display = 'none';
+
+  const data = { 
+    mood: parseInt(mood), 
+    sleep: parseInt(sleep),
+    anxiety: parseInt(anxiety),
+    exercise: parseInt(exercise),
+    support: parseInt(support)
+  };
+
   const token = localStorage.getItem('token');
 
   try {
-    const response = await axios.post('http://localhost:3000/api/checkin', data, {
-      headers: { Authorization: `Bearer ${token}` }
+    // Replace with your actual API endpoint
+    const response = await fetch('YOUR_API_ENDPOINT_HERE', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+        body: JSON.stringify(data)
     });
-    const prediction = response.data.prediction;
-    alert(`Hasil Prediksi Stres Anda: ${prediction}`);
-    // Redirect or update UI with prediction
-  } catch (error) {
-    alert('Gagal memproses check-in: ' + (error.response?.data?.message || error.message));
-  }
-};
 
-window.logout = function () {
-  localStorage.removeItem('token');
-  window.location.href = 'login.html';
-};
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    const result = await response.json();
+    const prediction = result.prediction;
+        
+    localStorage.setItem('lastPrediction', JSON.stringify({ 
+      prediction, 
+      date: new Date().toLocaleString('id-ID'),
+      data: data
+    }));
+        
+    alert(`Hasil Prediksi Stres Anda: ${prediction}`);
+    window.location.href = 'results.html';
+      
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Gagal memproses check-in: ' + error.message);
+  }
+}
