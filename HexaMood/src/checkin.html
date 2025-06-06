@@ -2,115 +2,217 @@
 <html lang="id">
 <head>
   <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1" name="viewport">
-  <title>Daily Check-In - HexaMood</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Daily-Checkin - HexaMood</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
-  <link href="/styles/style.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="styles/checkin.css">
 </head>
 <body>
   <header class="border-bottom">
-    <div class="container d-flex justify-content-between align-items-center py-3">
-      <div class="logo-container d-flex align-items-center gap-2">
-        <img alt="Logo HexaMood" class="logo" height="48" src="./images/hxmod.png" width="48">
-        <div class="logo-text">HexaMood</div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+          <img alt="Logo HexaMood" class="logo" src="images/logo.jpg"/>
+          <span class="logo-text">HexaMood</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-lg-center gap-lg-3">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Beranda</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="checkin.html">Daily Check-In</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="results.html">Hasil Prediksi</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="journaling.html">Journaling</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="recommendations.html">Rekomendasi</a>
+            </li>
+            <li class="nav-item auth-buttons">
+              <button class="btn btn-outline-primary d-none btn-logout" id="btn-logout" onclick="handleLogout()">Keluar</button>
+            </li>
+          </ul>
+        </div>
       </div>
-      <nav class="d-flex gap-3">
-        <a href="index.html">Beranda</a>
-        <a href="checkin.html" class="active">Daily Check-In</a>
-        <a href="#">Hasil Prediksi</a>
-        <a href="#">Rekomendasi</a>
-      </nav>
-      <div class="auth-buttons d-flex gap-2">
-        <button class="btn btn-outline-primary" onclick="logout()">Keluar</button>
-      </div>
-    </div>
+    </nav>
   </header>
 
-  <main class="container py-5">
-    <h1 class="text-center mb-4">Daily Check-In</h1>
-    <div class="row justify-content-center">
-      <div class="col-md-8 col-lg-6">
-        <div class="mb-4">
-          <label class="form-label">Bagaimana suasana hati Anda hari ini?</label>
-          <div class="d-flex justify-content-between">
-            <div class="form-check">
-              <input type="radio" class="form-check-input" name="mood" value="1" required>
-              <label class="form-check-label">😊</label>
-            </div>
-            <div class="form-check">
-              <input type="radio" class="form-check-input" name="mood" value="2">
-              <label class="form-check-label">😄</label>
-            </div>
-            <div class="form-check">
-              <input type="radio" class="form-check-input" name="mood" value="3">
-              <label class="form-check-label">😐</label>
-            </div>
-            <div class="form-check">
-              <input type="radio" class="form-check-input" name="mood" value="4">
-              <label class="form-check-label">😟</label>
-            </div>
-            <div class="form-check">
-              <input type="radio" class="form-check-input" name="mood" value="5">
-              <label class="form-check-label">😢</label>
-            </div>
+  <main>
+    <div class="main-container">
+      <h1>Daily Check-In</h1>
+      
+      <div class="question-section">
+        <label class="form-label">Dalam tujuh hari terakhir, seberapa sering Anda merasa marah atau mudah tersinggung, bahkan terhadap hal-hal kecil?</label>
+        <div class="option-group">
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="mood" value="0" required>
+            <label class="form-check-label">Tidak Pernah</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="mood" value="1">
+            <label class="form-check-label">1x dalam seminggu</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="mood" value="2">
+            <label class="form-check-label">2-3x seminggu</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="mood" value="3">
+            <label class="form-check-label">4-5x seminggu</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="mood" value="4">
+            <label class="form-check-label">Setiap hari/hampir setiap hari</label>
           </div>
         </div>
-        <div class="mb-4">
-          <label class="form-label">Seberapa sering Anda merasa cemas hari ini?</label>
-          <div class="d-flex justify-content-between">
-            <div class="form-check">
-              <input type="radio" class="form-check-input" name="anxiety" value="1" required>
-              <label class="form-check-label">Tidak Sama Sekali</label>
-            </div>
-            <div class="form-check">
-              <input type="radio" class="form-check-input" name="anxiety" value="2">
-              <label class="form-check-label">Jarang</label>
-            </div>
-            <div class="form-check">
-              <input type="radio" class="form-check-input" name="anxiety" value="3">
-              <label class="form-check-label">Kadang-kadang</label>
-            </div>
-            <div class="form-check">
-              <input type="radio" class="form-check-input" name="anxiety" value="4">
-              <label class="form-check-label">Sering</label>
-            </div>
-            <div class="form-check">
-              <input type="radio" class="form-check-input" name="anxiety" value="5">
-              <label class="form-check-label">Selalu</label>
-            </div>
-          </div>
-        </div>
-        <div class="mb-4">
-          <label class="form-label">Seberapa baik kualitas tidur Anda semalam?</label>
-          <div class="d-flex justify-content-between">
-            <div class="form-check">
-              <input type="radio" class="form-check-input" name="sleep" value="1" required>
-              <label class="form-check-label">Sangat Buruk</label>
-            </div>
-            <div class="form-check">
-              <input type="radio" class="form-check-input" name="sleep" value="2">
-              <label class="form-check-label">Buruk</label>
-            </div>
-            <div class="form-check">
-              <input type="radio" class="form-check-input" name="sleep" value="3">
-              <label class="form-check-label">Cukup</label>
-            </div>
-            <div class="form-check">
-              <input type="radio" class="form-check-input" name="sleep" value="4">
-              <label class="form-check-label">Baik</label>
-            </div>
-            <div class="form-check">
-              <input type="radio" class="form-check-input" name="sleep" value="5">
-              <label class="form-check-label">Sangat Baik</label>
-            </div>
-          </div>
-        </div>
-        <button type="button" class="btn btn-primary w-100" onclick="submitCheckIn()">Submit</button>
       </div>
+
+      <div class="question-section">
+        <label class="form-label">Apakah Anda mengalami kesulitan tidur, seperti sulit tertidur, sering terbangun di malam hari, atau bangun lebih awal dan tidak bisa tidur lagi, dalam satu minggu terakhir?</label>
+        <div class="option-group">
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="sleep" value="0" required>
+            <label class="form-check-label">Tidak Pernah</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="sleep" value="1">
+            <label class="form-check-label">1x dalam seminggu</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="sleep" value="2">
+            <label class="form-check-label">2-3x seminggu</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="sleep" value="3">
+            <label class="form-check-label">4-5x seminggu</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="sleep" value="4">
+            <label class="form-check-label">Setiap hari/hampir setiap hari</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="question-section">
+        <label class="form-label">Dalam dua minggu terakhir, apakah Anda merasa tidak memiliki kendali atas apa yang terjadi dalam hidup Anda, baik secara emosional maupun situasional?</label>
+        <div class="option-group">
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="anxiety" value="0" required>
+            <label class="form-check-label">Tidak Pernah</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="anxiety" value="1">
+            <label class="form-check-label">1x dalam seminggu</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="anxiety" value="2">
+            <label class="form-check-label">2-3x seminggu</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="anxiety" value="3">
+            <label class="form-check-label">4-5x seminggu</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="anxiety" value="4">
+            <label class="form-check-label">Setiap hari/hampir setiap hari</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="question-section">
+        <label class="form-label">Berapa kali Anda melakukan aktivitas fisik seperti olahraga, jalan kaki, atau peregangan tubuh dalam satu minggu terakhir?</label>
+        <div class="option-group">
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="exercise" value="0" required>
+            <label class="form-check-label">Tidak Pernah</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="exercise" value="1">
+            <label class="form-check-label">1x dalam seminggu</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="exercise" value="2">
+            <label class="form-check-label">2-3x seminggu</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="exercise" value="3">
+            <label class="form-check-label">4-5x seminggu</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="exercise" value="4">
+            <label class="form-check-label">Setiap hari/hampir setiap hari</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="question-section">
+        <label class="form-label">Apakah Anda merasa memiliki dukungan emosional dari teman, keluarga, atau orang terdekat saat Anda sedang menghadapi tekanan atau masalah?</label>
+        <div class="option-group">
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="support" value="0" required>
+            <label class="form-check-label">Tidak Pernah</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="support" value="1">
+            <label class="form-check-label">1x dalam seminggu</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="support" value="2">
+            <label class="form-check-label">2-3x seminggu</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="support" value="3">
+            <label class="form-check-label">4-5x seminggu</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="support" value="4">
+            <label class="form-check-label">Setiap hari/hampir setiap hari</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="error-message" id="errorMessage">
+        Harap isi semua pertanyaan sebelum melanjutkan.
+      </div>
+
+      <button type="button" class="btn btn-primary" onclick="submitCheckIn()">Submit</button>
     </div>
   </main>
 
-  <script type="module" src="./js/checkin.js"></script>
+  <footer class="bg-light py-3">
+    <div class="container d-flex justify-content-between align-items-center">
+      <div class="text-muted">© 2025 HexaMood</div>
+      <ul class="list-inline mb-0">
+        <li class="list-inline-item">
+          <a href="index.html" class="text-muted">Beranda</a>
+        </li>
+        <li class="list-inline-item">
+          <a href="checkin.html" class="text-muted">Daily Check-In</a>
+        </li>
+        <li class="list-inline-item">
+          <a href="results.html" class="text-muted">Hasil Prediksi</a>
+        </li>
+        <li class="list-inline-item">
+          <a href="journaling.html" class="text-muted">Journaling</a>
+        </li>
+        <li class="list-inline-item">
+          <a href="recommendations.html" class="text-muted">Rekomendasi</a>
+        </li>
+      </ul>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="js/lib/bootstrap.bundle.min.js"></script>
+  <script src="js/checkin.bundle.js"></script>
+  <script src="js/navbar.bundle.js"></script>
 </body>
 </html>
