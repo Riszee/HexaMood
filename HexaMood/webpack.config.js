@@ -16,7 +16,8 @@ module.exports = (env) => {
       journaling: "./src/js/journaling.js",
       results: "./src/js/results.js",
       recommendations: "./src/js/recommendations.js",
-      navbar: "./src/js/navbar.js",
+      'navbar-component': "./src/js/navbar-component.js",
+      'footer-component': "./src/js/footer-component.js",
     },
     output: {
       path: path.resolve(__dirname, "dist"),
