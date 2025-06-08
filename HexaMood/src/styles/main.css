@@ -21,114 +21,6 @@ a {
   color: inherit;
 }
 
-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  background: #ffffff;
-  border-bottom: 1px solid #ddd;
-  z-index: 1000;
-  padding: 0;
-}
-
-.navbar {
-  padding: 12px 16px;
-}
-
-.navbar-toggler {
-  z-index: 1100;
-  pointer-events: auto !important;
-  cursor: pointer;
-  opacity: 1 !important;
-  border: none;
-  outline: none;
-}
-
-.navbar-collapse {
-  transition: all 0.3s ease;
-}
-
-.logo-container {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.logo {
-  width: 40px;
-  height: 40px;
-}
-
-.logo-text {
-  font-weight: 700;
-  font-size: 18px;
-  user-select: none;
-}
-
-.navbar-nav {
-  gap: 16px;
-}
-
-.nav-link {
-  color: #000000;
-  padding: 8px 12px;
-  position: relative;
-  cursor: pointer;
-  transition: color 0.3s ease;
-}
-
-.nav-link:hover {
-  color: #f56a9a;
-}
-
-.nav-link.active {
-  color: #f56a9a;
-}
-
-.auth-buttons {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.btn-masuk,
-.btn-daftar,
-.btn-logout {
-  background-color: #f56a9a;
-  color: #000000;
-  font-weight: 400;
-  font-size: 14px;
-  border: none;
-  border-radius: 20px;
-  padding: 8px 16px;
-  cursor: pointer;
-  user-select: none;
-  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.btn-outline-primary.btn-daftar,
-.btn-outline-primary.btn-logout {
-  background-color: transparent;
-  color: #f56a9a;
-  border: 1px solid #f56a9a;
-}
-
-.btn-masuk:hover,
-.btn-daftar:hover,
-.btn-logout:hover {
-  background-color: #ff7b7b;
-  transform: scale(1.05);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.btn-outline-primary.btn-daftar:hover,
-.btn-outline-primary.btn-logout:hover {
-  background-color: #ff7b7b;
-  color: #000000;
-  border-color: #ff7b7b;
-}
-
 button {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -136,19 +28,6 @@ button {
 button:hover {
   transform: scale(1.05);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-footer {
-  max-width: 100%;
-  padding: 16px;
-  font-size: clamp(12px, 3vw, 13px);
-  color: #6c757d;
-  background: #f8f9fa;
-}
-
-.footer-subtext {
-  font-weight: 400;
-  font-size: clamp(12px, 3vw, 13px);
 }
 
 main {
@@ -384,18 +263,6 @@ main {
     padding-top: 60px;
   }
 
-  .logo-text {
-    font-size: 16px;
-  }
-
-  .navbar {
-    padding: 10px 12px;
-  }
-
-  .navbar-nav {
-    gap: 12px;
-  }
-
   .hero {
     min-height: 40vh;
     padding: 24px 16px;
@@ -444,64 +311,6 @@ main {
 @media (max-width: 767px) {
   body {
     padding-top: 50px;
-  }
-
-  header {
-    padding: 0;
-  }
-
-  .navbar {
-    padding: 8px 12px;
-  }
-
-  .logo-container {
-    gap: 8px;
-  }
-
-  .logo {
-    width: 32px;
-    height: 32px;
-  }
-
-  .logo-text {
-    font-size: 14px;
-  }
-
-  .navbar-collapse {
-    background: #ffffff;
-    padding: 16px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-
-  .navbar-collapse.show {
-    display: block !important;
-  }
-
-  .navbar-nav {
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .nav-link {
-    padding: 10px;
-    width: 100%;
-    text-align: center;
-  }
-
-  .auth-buttons {
-    flex-direction: column;
-    width: 100%;
-    gap: 12px;
-    padding: 12px 0;
-  }
-
-  .btn-masuk,
-  .btn-daftar,
-  .btn-logout {
-    width: 100%;
-    max-width: 200px;
-    margin: 0 auto;
   }
 
   .hero {
