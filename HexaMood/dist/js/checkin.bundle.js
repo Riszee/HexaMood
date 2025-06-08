@@ -1,1 +1,0 @@
-(()=>{"use strict";document.addEventListener("DOMContentLoaded",(()=>{localStorage.getItem("currentUser")&&JSON.parse(localStorage.getItem("currentUser"))||(alert("Silakan login untuk mengakses Daily Check-In."),window.location.href="login.html")}))})();
