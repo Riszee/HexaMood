@@ -9,41 +9,8 @@
   <link rel="stylesheet" type="text/css" href="styles/recommendations.css">
 </head>
 <body>
-  <header class="border-bottom">
-    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
-      <div class="container">
-        <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
-          <img alt="Logo HexaMood" class="logo" src="images/logo.jpg">
-          <span class="logo-text">HexaMood</span>
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-lg-center gap-lg-3">
-            <li class="nav-item">
-              <a class="nav-link" href="index.html">Beranda</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="checkin.html">Daily Check-In</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="journaling.html">Journaling</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="results.html">Hasil Prediksi</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" href="recommendations.html">Rekomendasi</a>
-            </li>
-            <li class="nav-item auth-buttons">
-              <button class="btn btn-outline-primary d-none btn-logout" id="btn-logout" onclick="handleLogout()">Keluar</button>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-  </header>
+  
+  <navbar-component></navbar-component>
 
    <main>
     <div class="recommendations-container">
@@ -55,34 +22,13 @@
       </div>
     </div>
   </main>
-
-
-  <footer class="bg-light py-3">
-    <div class="container d-flex justify-content-between align-items-center">
-      <div class="text-muted">© 2025 HexaMood</div>
-      <ul class="list-inline mb-0">
-        <li class="list-inline-item">
-          <a href="index.html" class="text-muted">Beranda</a>
-        </li>
-        <li class="list-inline-item">
-          <a href="checkin.html" class="text-muted">Daily Check-In</a>
-        </li>
-        <li class="list-inline-item">
-          <a href="journaling.html" class="text-muted">Journaling</a>
-        </li>
-        <li class="list-inline-item">
-          <a href="results.html" class="text-muted">Hasil Prediksi</a>
-        </li>
-        <li class="list-inline-item">
-          <a href="recommendations.html" class="text-muted">Rekomendasi</a>
-        </li>
-      </ul>
-    </div>
-  </footer>
+  
+  <footer-component></footer-component>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="js/lib/bootstrap.bundle.min.js"></script>
   <script src="js/recommendations.bundle.js"></script>
-  <script src="js/navbar.bundle.js"></script>
+  <script src="js/navbar-component.bundle.js"></script>
+  <script src="js/footer-component.bundle.js"></script>
 </body>
 </html>
