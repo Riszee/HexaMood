@@ -61,7 +61,7 @@ function displayPredictionResult(prediction, container) {
       </div>
       
       <div class="recommendation-cta">
-        <a href="recommendations.html" class="recommendation-button">Lihat Rekomendasi</a>
+        <a href="recommendations.html" class="cta-button">Lihat Rekomendasi</a>
       </div>
     </div>
   `;
