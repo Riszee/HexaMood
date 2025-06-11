@@ -4,6 +4,7 @@ import { initializeAnimations } from "./form/animations.js";
 document.addEventListener("DOMContentLoaded", async () => {
   console.log("main.js loaded, checking images...");
   
+  // Image loading check
   const images = document.querySelectorAll("img");
   images.forEach((img) => {
     console.log(`Image: ${img.src}, Alt: ${img.alt}`);
@@ -12,6 +13,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
+  // User authentication logic
   const currentUser = localStorage.getItem("currentUser")
     ? JSON.parse(localStorage.getItem("currentUser"))
     : null;
@@ -30,12 +32,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     logoutBtn?.classList.add("d-none");
   }
 
+  // Initialize animations
   try {
     await initializeAnimations();
   } catch (error) {
     console.error("Failed to initialize animations:", error);
   }
 
+  // Card navigation logic with improved error handling and user feedback
   const cardNavigations = [
     {
       id: "card-question",
@@ -59,19 +63,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   ];
 
+  // Setup card click handlers
   cardNavigations.forEach(({ id, url, title }) => {
     const card = document.getElementById(id);
     
     if (card) {
+      // Add cursor pointer style
       card.style.cursor = "pointer";
       
+      // Add click event listener
       card.addEventListener("click", (event) => {
         event.preventDefault();
         
         console.log(`Navigating to ${title} (${url})`);
         
+        // Optional: Add loading state or animation
         card.style.opacity = "0.7";
         
+        // Navigate to the page
         try {
           window.location.href = url;
         } catch (error) {
@@ -82,6 +91,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
       });
 
+      // Add keyboard navigation support (accessibility)
       card.addEventListener("keydown", (event) => {
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault();
@@ -89,6 +99,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
       });
 
+      // Add hover effects
       card.addEventListener("mouseenter", () => {
         card.style.transform = "translateY(-5px) scale(1.02)";
         card.style.transition = "all 0.3s ease";
@@ -109,6 +120,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
+  // Optional: Add visual feedback when cards are being hovered
   const allCards = document.querySelectorAll('.card');
   allCards.forEach(card => {
     if (!card.style.cursor) {
@@ -119,10 +131,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   console.log("All card navigation handlers initialized successfully");
 });
 
+// Optional: Add global error handler for navigation issues
 window.addEventListener('error', (event) => {
   if (event.filename && event.filename.includes('main.js')) {
     console.error('Error in main.js:', event.error);
   }
 });
 
+// Export for testing purposes (optional)
 export { };
