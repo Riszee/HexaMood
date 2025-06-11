@@ -35,7 +35,19 @@ function displayNoRecommendation(container) {
 }
 
 function displayRecommendations(prediction, container) {
-  const stressLevel = typeof prediction.prediction === 'string' ? parseInt(prediction.prediction) : prediction.prediction;
+  const stressLevelMap = {
+    'Tidak Stress': 0,
+    'Sedikit Stress': 1,
+    'Normal': 2,
+    'Stress': 3,
+    'Sangat Stress': 4
+  };
+
+  const rawPrediction = prediction.prediction;
+  const stressLevel = typeof rawPrediction === 'string'
+    ? (rawPrediction in stressLevelMap ? stressLevelMap[rawPrediction] : -1)
+    : rawPrediction;
+
   const stressData = getStressLevelData(stressLevel);
   const recommendations = getRecommendations(stressLevel);
 
