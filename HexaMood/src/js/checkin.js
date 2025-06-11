@@ -47,13 +47,13 @@ async function submitCheckIn() {
 
   try {
     // Replace with your actual API endpoint
-    const response = await fetch('YOUR_API_ENDPOINT_HERE', {
+    const response = await fetch('http://localhost:8000/predict', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-        body: JSON.stringify(data)
+      body: JSON.stringify(data)
     });
 
     if (!response.ok) {
@@ -61,19 +61,23 @@ async function submitCheckIn() {
     }
 
     const result = await response.json();
-    const prediction = result.prediction;
+    console.log("Full API response:", result); // 👈 Tambahkan log ini
+
+    const prediction = result.predicted_label;
+    console.log("Predicted label:", prediction); // 👈 Tambahkan log ini
         
     localStorage.setItem('lastPrediction', JSON.stringify({ 
       prediction, 
-      date: new Date().toLocaleString('id-ID'),
+      date: new Date().toISOString(),
       data: data
     }));
         
     alert(`Hasil Prediksi Stres Anda: ${prediction}`);
     window.location.href = 'results.html';
-      
+        
   } catch (error) {
     console.error('Error:', error);
     alert('Gagal memproses check-in: ' + error.message);
   }
 }
+window.submitCheckIn = submitCheckIn;
