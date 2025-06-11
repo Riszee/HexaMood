@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const prediction = JSON.parse(localStorage.getItem('lastPrediction'));
+  console.log(prediction);
   const resultsDiv = document.getElementById('prediction-results');
 
   if (!prediction) {
@@ -33,11 +34,12 @@ function displayNoPrediction(container) {
 
 function displayPredictionResult(prediction, container) {
   const stressData = getStressLevelData(prediction.prediction);
+  const formattedDate = formatDate(prediction.date);
   
   container.innerHTML = `
     <div class="prediction-card ${stressData.class}">
       <div class="prediction-date">
-         ${formatDate(prediction.date)}
+         ${formattedDate}
       </div>
       
       <div class="stress-emoji">${stressData.emoji}</div>
@@ -107,8 +109,16 @@ function displayPredictionHistory(container) {
 
 function getStressLevelData(prediction) {
   // Convert prediction to number for consistency
-  const level = typeof prediction === 'string' ? parseInt(prediction) : prediction;
-  
+  const stressLevelMap = {
+  'Tidak Stress': 0,
+  'Sedikit Stress': 1,
+  'Normal': 2,
+  'Stress': 3,
+  'Sangat Stress': 4
+};
+
+  const level = typeof prediction === 'string' ? stressLevelMap[prediction] : prediction;
+  console.log("Mapped stress level:", level); // Debugging log
   switch(level) {
     case 0:
       return {
