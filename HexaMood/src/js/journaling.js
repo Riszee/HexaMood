@@ -3,7 +3,7 @@ import '../styles/journaling.css';
 class JournalingApp {
   constructor() {
     this.currentUser = null;
-    this.apiEndpoint = '/api/journal'; // Update with your actual API endpoint
+    this.mlApiEndpoint = 'http://localhost:8000/analyze'; // ML API endpoint
     this.init();
   }
 
@@ -12,6 +12,8 @@ class JournalingApp {
       this.checkAuthentication();
       this.setupEventListeners();
       this.setupTextareaAutoResize();
+      this.setupAccessibility();
+      this.setupKeyboardShortcuts();
     });
   }
 
@@ -26,7 +28,6 @@ class JournalingApp {
       return;
     }
 
-    // Show logout button if user is authenticated
     const logoutBtn = document.getElementById('btn-logout');
     if (logoutBtn) {
       logoutBtn.classList.remove('d-none');
@@ -34,19 +35,16 @@ class JournalingApp {
   }
 
   setupEventListeners() {
-    // Form submission
     const form = document.getElementById('journaling-form');
     if (form) {
       form.addEventListener('submit', (e) => this.handleSubmit(e));
     }
 
-    // Logout button
     const logoutBtn = document.getElementById('btn-logout');
     if (logoutBtn) {
       logoutBtn.addEventListener('click', () => this.handleLogout());
     }
 
-    // Auto-save draft (optional)
     const textarea = document.getElementById('journal-entry');
     if (textarea) {
       textarea.addEventListener('input', () => this.saveDraft());
@@ -67,229 +65,185 @@ class JournalingApp {
   async handleSubmit(e) {
     e.preventDefault();
     
-    const submitBtn = document.getElementById('submit-btn');
-    const btnText = submitBtn.querySelector('.btn-text');
+    const submitBtn = document.getElementById('submit-btn') || e.target.querySelector('button[type="submit"]');
     const journalEntry = document.getElementById('journal-entry').value.trim();
-    const successMessage = document.getElementById('success-message');
+    const resultDiv = document.getElementById('emotion-result');
     
     if (!this.validateEntry(journalEntry)) {
       return;
     }
 
-    // Show loading state
-    this.setLoadingState(submitBtn, btnText, true);
-    successMessage.classList.add('d-none');
+    this.setLoadingState(submitBtn, true);
+    if (resultDiv) {
+      resultDiv.innerHTML = '';
+    }
 
     try {
-      const result = await this.submitJournal(journalEntry);
-      this.handleSuccessfulSubmission(result);
+      const mlResult = await this.callMLAPI(journalEntry);
       
-      // Clear form and draft
+      const savedData = await this.saveJournalEntry(journalEntry, mlResult);
+      
+      this.displayMLResult(mlResult, resultDiv);
+      
       document.getElementById('journal-entry').value = '';
       this.clearDraft();
       
-      // Show success message
-      successMessage.classList.remove('d-none');
+      this.showNotification('Jurnal berhasil disimpan dan dianalisis!', 'success');
+
+      this.trackJournalEvent('journal_submitted', {
+        emotion: mlResult.emotion,
+        confidence: mlResult.confidence
+      });
       
     } catch (error) {
-      this.handleSubmissionError(error);
+      this.handleSubmissionError(error, resultDiv);
     } finally {
-      this.setLoadingState(submitBtn, btnText, false);
+      this.setLoadingState(submitBtn, false);
     }
+  }
+
+  async callMLAPI(journalText) {
+    try {
+      const response = await fetch(this.mlApiEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: journalText }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: Gagal menghubungi server ML!`);
+      }
+
+      const data = await response.json();
+      return {
+        emotion: data.emotion,
+        confidence: data.confidence,
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      console.error('ML API Error:', error);
+      throw error;
+    }
+  }
+
+  async saveJournalEntry(journalText, mlResult) {
+    const journalData = {
+      id: this.generateEntryId(),
+      user_id: this.currentUser.id,
+      journal_text: journalText,
+      ml_analysis: mlResult,
+      timestamp: new Date().toISOString(),
+      source: 'web_app'
+    };
+
+    const entriesKey = `journal_entries_${this.currentUser.id}`;
+    let entries = JSON.parse(localStorage.getItem(entriesKey)) || [];
+    
+    entries.unshift(journalData);
+    
+    if (entries.length > 100) {
+      entries = entries.slice(0, 100);
+    }
+    
+    localStorage.setItem(entriesKey, JSON.stringify(entries));
+    
+    this.updateJournalSummary(mlResult);
+    
+    return journalData;
+  }
+
+  displayMLResult(mlResult, resultDiv) {
+    if (!resultDiv) return;
+    
+    const confidencePercent = (mlResult.confidence * 100).toFixed(2);
+    
+    resultDiv.innerHTML = `
+      <div class="alert alert-info fade show" role="alert">
+        <h6 class="alert-heading">📊 Hasil Analisis Emosi</h6>
+        <p class="mb-1">
+          <strong>Prediksi Emosi:</strong> 
+          <span class="badge bg-primary fs-6">${mlResult.emotion}</span>
+        </p>
+        <p class="mb-0">
+          <strong>Tingkat Keyakinan:</strong> ${confidencePercent}%
+        </p>
+        <div class="progress mt-2" style="height: 6px;">
+          <div class="progress-bar" role="progressbar" 
+               style="width: ${confidencePercent}%" 
+               aria-valuenow="${confidencePercent}" 
+               aria-valuemin="0" aria-valuemax="100">
+          </div>
+        </div>
+      </div>
+    `;
   }
 
   validateEntry(entry) {
     if (!entry) {
-      alert('Harap isi jurnal sebelum mengirim.');
+      this.showNotification('Harap isi jurnal sebelum mengirim.', 'warning');
       return false;
     }
 
     if (entry.length < 10) {
-      alert('Jurnal terlalu pendek. Harap tulis minimal 10 karakter.');
+      this.showNotification('Jurnal terlalu pendek. Harap tulis minimal 10 karakter.', 'warning');
       return false;
     }
 
     if (entry.length > 5000) {
-      alert('Jurnal terlalu panjang. Maksimal 5000 karakter.');
+      this.showNotification('Jurnal terlalu panjang. Maksimal 5000 karakter.', 'warning');
+      return false;
+    }
+
+    if (this.detectSpam(entry)) {
+      this.showNotification('Konten terdeteksi sebagai spam. Harap tulis dengan normal.', 'warning');
       return false;
     }
 
     return true;
   }
 
-  async submitJournal(journalText) {
-    const journalData = {
-      journal_text: journalText,
-      user_id: this.currentUser?.id || 'anonymous',
-      timestamp: new Date().toISOString(),
-      source: 'web_app',
-      // Add any additional metadata your ML model needs
-      metadata: {
-        session_id: this.generateSessionId(),
-        user_agent: navigator.userAgent,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
-      }
-    };
-
-    // TODO: Replace with actual API call
-    /*
-    const response = await fetch(`${this.apiEndpoint}/analyze`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.getAuthToken()}`,
-        'X-User-ID': this.currentUser.id
-      },
-      body: JSON.stringify(journalData)
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to submit journal');
-    }
-
-    return await response.json();
-    */
-
-    // Simulate API call for development
-    return this.simulateMLAnalysis(journalData);
-  }
-
-  async simulateMLAnalysis(journalData) {
-    // Simulate processing time
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // Simulate ML model response
-    const mockAnalysis = {
-      sentiment: this.analyzeSentiment(journalData.journal_text),
-      emotions: this.extractEmotions(journalData.journal_text),
-      stress_level: this.assessStressLevel(journalData.journal_text),
-      confidence: Math.random() * 0.3 + 0.7, // 70-100%
-      keywords: this.extractKeywords(journalData.journal_text),
-      timestamp: new Date().toISOString()
-    };
-
-    return mockAnalysis;
-  }
-
-  analyzeSentiment(text) {
-    const positiveWords = ['happy', 'joy', 'good', 'great', 'amazing', 'wonderful', 'excited', 'bahagia', 'senang', 'gembira'];
-    const negativeWords = ['sad', 'angry', 'frustrated', 'stressed', 'worried', 'anxious', 'sedih', 'marah', 'stress', 'khawatir'];
-    
-    const lowerText = text.toLowerCase();
-    const positiveCount = positiveWords.filter(word => lowerText.includes(word)).length;
-    const negativeCount = negativeWords.filter(word => lowerText.includes(word)).length;
-    
-    if (positiveCount > negativeCount) return 'positive';
-    if (negativeCount > positiveCount) return 'negative';
-    return 'neutral';
-  }
-
-  extractEmotions(text) {
-    const emotionMap = {
-      happy: ['happy', 'joy', 'excited', 'bahagia', 'senang', 'gembira'],
-      sad: ['sad', 'depressed', 'down', 'sedih', 'murung'],
-      angry: ['angry', 'frustrated', 'annoyed', 'marah', 'kesal'],
-      anxious: ['anxious', 'worried', 'nervous', 'cemas', 'khawatir'],
-      calm: ['calm', 'peaceful', 'relaxed', 'tenang', 'damai']
-    };
-
-    const lowerText = text.toLowerCase();
-    const detectedEmotions = [];
-
-    for (const [emotion, keywords] of Object.entries(emotionMap)) {
-      if (keywords.some(keyword => lowerText.includes(keyword))) {
-        detectedEmotions.push(emotion);
-      }
-    }
-
-    return detectedEmotions.length > 0 ? detectedEmotions : ['neutral'];
-  }
-
-  assessStressLevel(text) {
-    const stressIndicators = ['stress', 'overwhelmed', 'pressure', 'deadline', 'busy', 'tired', 'exhausted', 'tertekan', 'lelah', 'capek'];
-    const lowerText = text.toLowerCase();
-    
-    const stressCount = stressIndicators.filter(indicator => lowerText.includes(indicator)).length;
-    
-    if (stressCount >= 3) return 'high';
-    if (stressCount >= 1) return 'moderate';
-    return 'low';
-  }
-
-  extractKeywords(text) {
-    const words = text.toLowerCase().split(/\s+/);
-    const stopWords = ['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'yang', 'dan', 'di', 'ke', 'dari', 'untuk'];
-    
-    const filteredWords = words.filter(word => 
-      word.length > 3 && 
-      !stopWords.includes(word) && 
-      /^[a-zA-Z]+$/.test(word)
-    );
-
-    // Return top 5 most frequent words
-    const wordCount = {};
-    filteredWords.forEach(word => {
-      wordCount[word] = (wordCount[word] || 0) + 1;
-    });
-
-    return Object.entries(wordCount)
-      .sort(([,a], [,b]) => b - a)
-      .slice(0, 5)
-      .map(([word]) => word);
-  }
-
-  handleSuccessfulSubmission(result) {
-    // Store analysis result for use in other pages
-    localStorage.setItem('lastJournalAnalysis', JSON.stringify({
-      ...result,
-      journal_text: document.getElementById('journal-entry').value.trim(),
-      submission_timestamp: new Date().toISOString()
-    }));
-
-    // Optional: Update user's journal history summary
-    this.updateJournalSummary(result);
-
-    console.log('Journal analysis completed:', result);
-  }
-
-  updateJournalSummary(analysis) {
+  updateJournalSummary(mlResult) {
     const summaryKey = `journal_summary_${this.currentUser.id}`;
     let summary = JSON.parse(localStorage.getItem(summaryKey)) || {
       total_entries: 0,
-      sentiment_history: [],
-      stress_trends: [],
+      emotion_history: [],
       last_updated: null
     };
 
     summary.total_entries += 1;
-    summary.sentiment_history.push({
-      sentiment: analysis.sentiment,
-      date: new Date().toISOString().split('T')[0]
-    });
-    summary.stress_trends.push({
-      level: analysis.stress_level,
+    summary.emotion_history.push({
+      emotion: mlResult.emotion,
+      confidence: mlResult.confidence,
       date: new Date().toISOString().split('T')[0]
     });
     summary.last_updated = new Date().toISOString();
 
-    // Keep only last 30 days of data
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     const cutoffDate = thirtyDaysAgo.toISOString().split('T')[0];
 
-    summary.sentiment_history = summary.sentiment_history.filter(entry => entry.date >= cutoffDate);
-    summary.stress_trends = summary.stress_trends.filter(entry => entry.date >= cutoffDate);
+    summary.emotion_history = summary.emotion_history.filter(entry => entry.date >= cutoffDate);
 
     localStorage.setItem(summaryKey, JSON.stringify(summary));
   }
 
-  handleSubmissionError(error) {
+  handleSubmissionError(error, resultDiv) {
     console.error('Error submitting journal:', error);
     
-    // Show user-friendly error message
     const errorMessage = this.getErrorMessage(error);
-    alert(errorMessage);
+    
+    if (resultDiv) {
+      resultDiv.innerHTML = `
+        <div class="alert alert-danger" role="alert">
+          <h6 class="alert-heading">❌ Terjadi Kesalahan</h6>
+          <p class="mb-0">${errorMessage}</p>
+        </div>
+      `;
+    }
+    
+    this.showNotification(errorMessage, 'danger');
   }
 
   getErrorMessage(error) {
@@ -297,24 +251,30 @@ class JournalingApp {
       return 'Koneksi internet bermasalah. Silakan periksa koneksi Anda dan coba lagi.';
     }
     
-    if (error.message.includes('unauthorized') || error.message.includes('401')) {
-      return 'Sesi Anda telah berakhir. Silakan login kembali.';
+    if (error.message.includes('server ML') || error.message.includes('analyze')) {
+      return 'Server analisis emosi sedang bermasalah. Coba lagi dalam beberapa saat.';
     }
     
-    if (error.message.includes('rate limit')) {
-      return 'Terlalu banyak permintaan. Silakan tunggu beberapa saat sebelum mencoba lagi.';
+    if (error.message.includes('unauthorized') || error.message.includes('401')) {
+      return 'Sesi Anda telah berakhir. Silakan login kembali.';
     }
     
     return 'Terjadi kesalahan saat mengirim jurnal. Silakan coba lagi.';
   }
 
-  setLoadingState(submitBtn, btnText, isLoading) {
+  setLoadingState(submitBtn, isLoading) {
+    if (!submitBtn) return;
+    
     submitBtn.disabled = isLoading;
     
     if (isLoading) {
-      btnText.innerHTML = '<span class="loading"></span>Menganalisis...';
+      const originalText = submitBtn.innerHTML;
+      submitBtn.setAttribute('data-original-text', originalText);
+      submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Menganalisis...';
     } else {
-      btnText.innerHTML = 'Submit';
+      const originalText = submitBtn.getAttribute('data-original-text') || 'Submit';
+      submitBtn.innerHTML = originalText;
+      submitBtn.removeAttribute('data-original-text');
     }
   }
 
@@ -337,17 +297,13 @@ class JournalingApp {
       const draftData = JSON.parse(draft);
       const textarea = document.getElementById('journal-entry');
       
-      // Only load draft if it's less than 24 hours old
       const draftAge = new Date() - new Date(draftData.timestamp);
       const twentyFourHours = 24 * 60 * 60 * 1000;
       
       if (draftAge < twentyFourHours && textarea) {
         textarea.value = draftData.text;
-        
-        // Show draft notification
         this.showDraftNotification();
       } else {
-        // Remove old draft
         localStorage.removeItem(draftKey);
       }
     }
@@ -359,143 +315,25 @@ class JournalingApp {
   }
 
   showDraftNotification() {
-    const notification = document.createElement('div');
-    notification.className = 'draft-notification';
-    notification.innerHTML = `
-      <div class="alert alert-info alert-dismissible fade show" role="alert">
-        📝 Draft tersimpan telah dimuat
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      </div>
-    `;
-    
-    const form = document.getElementById('journaling-form');
-    form.insertBefore(notification, form.firstChild);
-    
-    // Auto-dismiss after 5 seconds
-    setTimeout(() => {
-      if (notification.parentNode) {
-        notification.remove();
-      }
-    }, 5000);
+    this.showNotification('📝 Draft tersimpan telah dimuat', 'info');
   }
 
+  // User Management
   handleLogout() {
     if (confirm('Apakah Anda yakin ingin keluar?')) {
-      // Clear user data
       localStorage.removeItem('currentUser');
       localStorage.removeItem('authToken');
       
-      // Clear draft for this user
       this.clearDraft();
       
-      // Redirect to login
+      this.trackJournalEvent('user_logout');
+      
       window.location.href = 'login.html';
     }
   }
 
-  generateSessionId() {
-    return 'session_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
-  }
-
-  getAuthToken() {
-    return localStorage.getItem('authToken') || '';
-  }
-
-  // Analytics and tracking methods
-  trackJournalEvent(eventType, data = {}) {
-    // For analytics integration (Google Analytics, etc.)
-    if (typeof gtag !== 'undefined') {
-      gtag('event', eventType, {
-        event_category: 'journaling',
-        event_label: this.currentUser?.id || 'anonymous',
-        ...data
-      });
-    }
-
-    // For custom analytics
-    console.log('Journal Event:', eventType, data);
-  }
-
-  // Utility methods for API integration
-  async makeAPIRequest(endpoint, options = {}) {
-    const defaultOptions = {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.getAuthToken()}`,
-        'X-User-ID': this.currentUser?.id || 'anonymous'
-      }
-    };
-
-    const mergedOptions = {
-      ...defaultOptions,
-      ...options,
-      headers: {
-        ...defaultOptions.headers,
-        ...options.headers
-      }
-    };
-
-    try {
-      const response = await fetch(`${this.apiEndpoint}${endpoint}`, mergedOptions);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('API Request failed:', error);
-      throw error;
-    }
-  }
-
-  // Real API integration methods (replace simulation methods)
-  async submitJournalToML(journalData) {
-    try {
-      // Real API call to your ML backend
-      const response = await this.makeAPIRequest('/analyze', {
-        method: 'POST',
-        body: JSON.stringify(journalData)
-      });
-
-      return response;
-    } catch (error) {
-      console.error('ML API Error:', error);
-      throw error;
-    }
-  }
-
-  async getJournalHistory(limit = 10) {
-    try {
-      const response = await this.makeAPIRequest(`/history?limit=${limit}`);
-      return response.data || [];
-    } catch (error) {
-      console.error('Failed to fetch journal history:', error);
-      return [];
-    }
-  }
-
-  async getAnalyticsSummary() {
-    try {
-      const response = await this.makeAPIRequest('/analytics/summary');
-      return response.data || {};
-    } catch (error) {
-      console.error('Failed to fetch analytics summary:', error);
-      return {};
-    }
-  }
-
-  // Enhanced validation methods
-  sanitizeInput(text) {
-    // Remove potentially harmful content
-    return text
-      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-      .replace(/<[^>]+>/g, '')
-      .trim();
-  }
-
-  validateTextLength(text, minLength = 10, maxLength = 5000) {
-    return text.length >= minLength && text.length <= maxLength;
+  generateEntryId() {
+    return 'entry_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
   }
 
   detectSpam(text) {
@@ -508,23 +346,22 @@ class JournalingApp {
     return spamPatterns.some(pattern => pattern.test(text));
   }
 
-  // Accessibility enhancements
   setupAccessibility() {
     const textarea = document.getElementById('journal-entry');
     if (textarea) {
-      // Add ARIA labels
       textarea.setAttribute('aria-describedby', 'journal-help');
       
-      // Add help text
-      const helpText = document.createElement('div');
-      helpText.id = 'journal-help';
-      helpText.className = 'form-text';
-      helpText.textContent = 'Bagikan perasaan dan pengalaman Anda dengan bebas. Tulisan Anda akan dianalisis untuk memberikan wawasan tentang kondisi mental Anda.';
-      textarea.parentNode.appendChild(helpText);
+      if (!document.getElementById('journal-help')) {
+        const helpText = document.createElement('div');
+        helpText.id = 'journal-help';
+        helpText.className = 'form-text';
+        helpText.textContent = 'Bagikan perasaan dan pengalaman Anda dengan bebas. Tulisan Anda akan dianalisis untuk memberikan wawasan tentang kondisi emosi Anda.';
+        textarea.parentNode.appendChild(helpText);
+      }
     }
   }
 
-  // Keyboard shortcuts
+  // Keyboard Shortcuts
   setupKeyboardShortcuts() {
     document.addEventListener('keydown', (e) => {
       // Ctrl/Cmd + Enter to submit
@@ -545,6 +382,7 @@ class JournalingApp {
     });
   }
 
+  // Notifications
   showNotification(message, type = 'info') {
     const notification = document.createElement('div');
     notification.className = `alert alert-${type} alert-dismissible fade show notification-toast`;
@@ -554,25 +392,63 @@ class JournalingApp {
       right: 20px;
       z-index: 9999;
       min-width: 300px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     `;
     notification.innerHTML = `
       ${message}
-      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
     `;
     
     document.body.appendChild(notification);
     
-    // Auto-dismiss after 3 seconds
     setTimeout(() => {
       if (notification.parentNode) {
         notification.remove();
       }
-    }, 3000);
+    }, 5000);
+  }
+
+  // Analytics
+  trackJournalEvent(eventType, data = {}) {
+    if (typeof gtag !== 'undefined') {
+      gtag('event', eventType, {
+        event_category: 'journaling',
+        event_label: this.currentUser?.id || 'anonymous',
+        ...data
+      });
+    }
+
+    console.log('Journal Event:', eventType, {
+      user_id: this.currentUser?.id,
+      timestamp: new Date().toISOString(),
+      ...data
+    });
+  }
+
+  getJournalHistory(limit = 10) {
+    const entriesKey = `journal_entries_${this.currentUser.id}`;
+    const entries = JSON.parse(localStorage.getItem(entriesKey)) || [];
+    return entries.slice(0, limit);
+  }
+
+  getJournalSummary() {
+    const summaryKey = `journal_summary_${this.currentUser.id}`;
+    return JSON.parse(localStorage.getItem(summaryKey)) || {
+      total_entries: 0,
+      emotion_history: [],
+      last_updated: null
+    };
+  }
+
+  searchJournalEntries(query) {
+    const entries = this.getJournalHistory(100);
+    return entries.filter(entry => 
+      entry.journal_text.toLowerCase().includes(query.toLowerCase()) ||
+      entry.ml_analysis.emotion.toLowerCase().includes(query.toLowerCase())
+    );
   }
 }
 
-// Initialize the application
 const journalingApp = new JournalingApp();
 
-// Export for use in other modules
 export default journalingApp;
