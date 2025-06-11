@@ -1,23 +1,21 @@
 import '../styles/register.css';
+import { registerUser } from './data/apiService.js';
 
-// Function to validate email format
 function isValidEmail(email) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 }
 
-// Function to validate password strength
 function isValidPassword(password) {
   return password.length >= 6; // Minimum 6 characters
 }
 
-window.handleRegister = function () {
-  const name = document.getElementById('register-name').value.trim();
+window.handleRegister = async function () {
+  const username = document.getElementById('register-name').value.trim(); // ✅ Perbaikan nama variabel
   const email = document.getElementById('register-email').value.trim();
   const password = document.getElementById('register-password').value;
 
-  // Input validation
-  if (!name || !email || !password) {
+  if (!username || !email || !password) {
     alert('Semua kolom harus diisi!');
     return;
   }
@@ -33,45 +31,50 @@ window.handleRegister = function () {
   }
 
   try {
-    // Get existing users from localStorage
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    
-    // Check if email already exists
-    const existingUser = users.find(user => user.email === email);
-    if (existingUser) {
-      alert('Email sudah terdaftar. Silakan gunakan email lain.');
-      return;
+    const registerButton = document.querySelector('button[type="submit"]');
+    const originalText = registerButton ? registerButton.textContent : '';
+    if (registerButton) {
+      registerButton.textContent = 'Sedang mendaftar...';
+      registerButton.disabled = true;
     }
 
-    // Create new user object
-    const newUser = {
-      id: Date.now(), // Simple ID generation
-      name,
-      email,
-      password,
-      createdAt: new Date().toISOString()
-    };
+    // ✅ Kirim username, bukan name
+    const response = await registerUser(username, email, password);
 
-    // Add new user to users array
-    users.push(newUser);
-    localStorage.setItem('users', JSON.stringify(users));
+    if (registerButton) {
+      registerButton.textContent = originalText;
+      registerButton.disabled = false;
+    }
 
-    alert('Registrasi berhasil!\nNama: ' + name + '\nEmail: ' + email);
-    
-    // Redirect to login page
-    window.location.href = 'login.html';
-    
+    // ✅ Perbaikan utama: cek status, bukan success
+    if (response && response.status === 'success') {
+      alert('Registrasi berhasil!\nNama: ' + username + '\nEmail: ' + email);
+
+      document.getElementById('register-name').value = '';
+      document.getElementById('register-email').value = '';
+      document.getElementById('register-password').value = '';
+
+      window.location.href = 'login.html';
+    } else {
+      const errorMessage = response?.message || 'Registrasi gagal. Silakan coba lagi.';
+      alert(errorMessage);
+    }
+
   } catch (error) {
+    if (registerButton) {
+      registerButton.textContent = 'Daftar';
+      registerButton.disabled = false;
+    }
+
     console.error('Error during registration:', error);
-    alert('Terjadi kesalahan saat registrasi. Silakan coba lagi.');
+    alert('Terjadi kesalahan saat registrasi. Silakan periksa koneksi internet dan coba lagi.');
   }
 };
 
-// Add event listener for form submission
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   const registerForm = document.getElementById('register-form');
   if (registerForm) {
-    registerForm.addEventListener('submit', function(e) {
+    registerForm.addEventListener('submit', function (e) {
       e.preventDefault();
       handleRegister();
     });
