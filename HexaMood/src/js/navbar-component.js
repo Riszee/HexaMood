@@ -478,7 +478,6 @@ class NavbarComponent extends HTMLElement {
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('lastPrediction');
     localStorage.removeItem('journalHistory');
-    alert('Anda telah keluar.');
     this.updateAuthState();
     window.location.href = 'index.html';
   }
