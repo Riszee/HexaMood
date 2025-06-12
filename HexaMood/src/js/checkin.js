@@ -67,8 +67,7 @@ async function submitCheckIn() {
       date: new Date().toISOString(),
       data: data
     }));
-        
-    alert(`Hasil Prediksi Stres Anda: ${prediction}`);
+      
     window.location.href = 'results.html';
         
   } catch (error) {
