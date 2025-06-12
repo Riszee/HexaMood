@@ -1,6 +1,4 @@
-// apiService.js - Frontend API Service
-
-const BASE_URL = 'http://localhost:5500';
+const BASE_URL = 'https://backend-production-9ddc2.up.railway.app';
 
 // Register User
 async function registerUser(username, email, password) {
