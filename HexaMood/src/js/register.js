@@ -38,7 +38,6 @@ window.handleRegister = async function () {
       registerButton.disabled = true;
     }
 
-    // ✅ Kirim username, bukan name
     const response = await registerUser(username, email, password);
 
     if (registerButton) {
@@ -46,7 +45,6 @@ window.handleRegister = async function () {
       registerButton.disabled = false;
     }
 
-    // ✅ Perbaikan utama: cek status, bukan success
     if (response && response.status === 'success') {
       alert('Registrasi berhasil!\nNama: ' + username + '\nEmail: ' + email);
 
