@@ -3,7 +3,7 @@ import '../styles/journaling.css';
 class JournalingApp {
   constructor() {
     this.currentUser = null;
-    this.mlApiEndpoint = 'http://localhost:8000/analyze'; // ML API endpoint
+    this.mlApiEndpoint = 'https://chipan-hexa-api.hf.space/analyze'; // ML API endpoint
     this.init();
   }
 
