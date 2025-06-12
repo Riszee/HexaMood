@@ -237,6 +237,5 @@ function handleLogout() {
   localStorage.removeItem('currentUser');
   localStorage.removeItem('lastPrediction');
   localStorage.removeItem('predictionHistory');
-  alert('Anda telah keluar dari akun.');
   window.location.href = 'login.html';
 }
