@@ -29,13 +29,11 @@ window.handleLogin = async function () {
     }
 
     const response = await loginUser(email, password);
-
     if (loginButton) {
       loginButton.textContent = originalText;
       loginButton.disabled = false;
     }
 
-    // ✅ Ini perbaikan utamanya
     if (response && response.status === "success") {
       const userData = {
         id: response.data.id,
