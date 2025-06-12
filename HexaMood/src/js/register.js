@@ -11,7 +11,7 @@ function isValidPassword(password) {
 }
 
 window.handleRegister = async function () {
-  const username = document.getElementById('register-name').value.trim(); // ✅ Perbaikan nama variabel
+  const username = document.getElementById('register-name').value.trim(); 
   const email = document.getElementById('register-email').value.trim();
   const password = document.getElementById('register-password').value;
 
