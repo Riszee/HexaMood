@@ -337,9 +337,9 @@ class JournalingApp {
 
   detectSpam(text) {
     const spamPatterns = [
-      /(.)\1{10,}/g,
-      /https?:\/\/[^\s]+/g,
-      /\b\d{4,}\b/g
+      /(.)\1{10,}/g, 
+      /https?:\/\/[^\s]+/g, 
+      /\b\d{4,}\b/g 
     ];
 
     return spamPatterns.some(pattern => pattern.test(text));
@@ -359,10 +359,10 @@ class JournalingApp {
       }
     }
   }
-  
+
   setupKeyboardShortcuts() {
     document.addEventListener('keydown', (e) => {
-     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         e.preventDefault();
         const form = document.getElementById('journaling-form');
         if (form) {
