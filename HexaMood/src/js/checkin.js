@@ -43,7 +43,7 @@ async function submitCheckIn() {
   const token = localStorage.getItem('token');
 
   try {
-    const response = await fetch('http://localhost:8000/predict', {
+    const response = await fetch('https://chipan-hexa-api.hf.space/predict', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
