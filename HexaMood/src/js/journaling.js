@@ -318,7 +318,6 @@ class JournalingApp {
     this.showNotification('📝 Draft tersimpan telah dimuat', 'info');
   }
 
-  // User Management
   handleLogout() {
     if (confirm('Apakah Anda yakin ingin keluar?')) {
       localStorage.removeItem('currentUser');
@@ -338,9 +337,9 @@ class JournalingApp {
 
   detectSpam(text) {
     const spamPatterns = [
-      /(.)\1{10,}/g, // Repeated characters
-      /https?:\/\/[^\s]+/g, // URLs
-      /\b\d{4,}\b/g // Long numbers
+      /(.)\1{10,}/g,
+      /https?:\/\/[^\s]+/g,
+      /\b\d{4,}\b/g
     ];
 
     return spamPatterns.some(pattern => pattern.test(text));
@@ -360,12 +359,10 @@ class JournalingApp {
       }
     }
   }
-
-  // Keyboard Shortcuts
+  
   setupKeyboardShortcuts() {
     document.addEventListener('keydown', (e) => {
-      // Ctrl/Cmd + Enter to submit
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         e.preventDefault();
         const form = document.getElementById('journaling-form');
         if (form) {
@@ -373,7 +370,6 @@ class JournalingApp {
         }
       }
       
-      // Ctrl/Cmd + S to save draft
       if ((e.ctrlKey || e.metaKey) && e.key === 's') {
         e.preventDefault();
         this.saveDraft();
@@ -382,7 +378,6 @@ class JournalingApp {
     });
   }
 
-  // Notifications
   showNotification(message, type = 'info') {
     const notification = document.createElement('div');
     notification.className = `alert alert-${type} alert-dismissible fade show notification-toast`;
@@ -408,7 +403,6 @@ class JournalingApp {
     }, 5000);
   }
 
-  // Analytics
   trackJournalEvent(eventType, data = {}) {
     if (typeof gtag !== 'undefined') {
       gtag('event', eventType, {
