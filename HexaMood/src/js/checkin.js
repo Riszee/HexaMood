@@ -9,14 +9,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// Handle logout
 function handleLogout() {
   localStorage.removeItem('currentUser');
   localStorage.removeItem('token');
   window.location.href = 'index.html';
 }
 
-// Submit check-in form
 async function submitCheckIn() {
   const mood = document.querySelector('input[name="mood"]:checked')?.value;
   const sleep = document.querySelector('input[name="sleep"]:checked')?.value;
@@ -26,7 +24,6 @@ async function submitCheckIn() {
 
   const errorMessage = document.getElementById('errorMessage');
       
-  // Validate all fields are filled
   if (!mood || !sleep || !anxiety || !exercise || !support) {
     errorMessage.style.display = 'block';
     errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -46,7 +43,6 @@ async function submitCheckIn() {
   const token = localStorage.getItem('token');
 
   try {
-    // Replace with your actual API endpoint
     const response = await fetch('http://localhost:8000/predict', {
       method: 'POST',
       headers: {
@@ -61,10 +57,10 @@ async function submitCheckIn() {
     }
 
     const result = await response.json();
-    console.log("Full API response:", result); // 👈 Tambahkan log ini
+    console.log("Full API response:", result);
 
     const prediction = result.predicted_label;
-    console.log("Predicted label:", prediction); // 👈 Tambahkan log ini
+    console.log("Predicted label:", prediction);
         
     localStorage.setItem('lastPrediction', JSON.stringify({ 
       prediction, 
